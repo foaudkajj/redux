@@ -314,6 +314,18 @@ Like with `SinglePostPage`, we'll need to import it into `App.js` and add a rout
         // highlight-end
 ```
 
+Don't forget to add `EditPostPage`'s <Route> to the APP.js file.
+  
+  ```jsx title="App.js"
+                  />
+          <Route exact path="/posts/:postId" component={SinglePostPage} />
+          // highlight-start
+          <Route exact path="/editPost/:postId" component={EditPostForm} />
+          // highlight-end
+          <Redirect to="/" />
+        </Switch>
+```
+
 ### Preparing Action Payloads
 
 We just saw that the action creators from `createSlice` normally expect one argument, which becomes `action.payload.` This simplifies the most common usage pattern, but sometimes we need to do more work to prepare the contents of an action object. In the case of our `postAdded` action, we need to generate a unique ID for the new post, and we also need to make sure that the payload is an object that looks like `{id, title, content}`.
