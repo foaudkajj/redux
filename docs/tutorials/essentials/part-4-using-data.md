@@ -355,13 +355,12 @@ const postsSlice = createSlice({
       reducer(state, action) {
         state.push(action.payload)
       },
-      prepare(title, content) {
+      prepare(payload) {
         return {
-          payload: {
-            id: nanoid(),
-            title,
-            content
-          }
+                    payload: {
+                        id: nanoid(),
+                        ...payload
+                    }
         }
       }
     }
@@ -450,15 +449,13 @@ const postsSlice = createSlice({
         state.push(action.payload)
       },
       // highlight-next-line
-      prepare(title, content, userId) {
+      prepare(payload) {
         return {
-          payload: {
-            id: nanoid(),
-            title,
-            content,
-            // highlight-next-line
-            user: userId
-          }
+                    payload: {
+                    // highlight-next-line
+                        id: nanoid(),
+                        ...payload
+                    }
         }
       }
     }
@@ -480,7 +477,7 @@ export const AddPostForm = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   // highlight-next-line
-  const [userId, setUserId] = useState('')
+  const [user, setUserId] = useState('')
 
   const dispatch = useDispatch()
 
@@ -489,19 +486,21 @@ export const AddPostForm = () => {
 
   const onTitleChanged = e => setTitle(e.target.value)
   const onContentChanged = e => setContent(e.target.value)
+  // highlight-start
   const onAuthorChanged = e => setUserId(e.target.value)
-
+  // highlight-end
+  
   const onSavePostClicked = () => {
     if (title && content) {
       // highlight-next-line
-      dispatch(postAdded(title, content, userId))
+      dispatch(postAdded(title, content, user))
       setTitle('')
       setContent('')
     }
   }
 
   // highlight-start
-  const canSave = Boolean(title) && Boolean(content) && Boolean(userId)
+  const canSave = Boolean(title) && Boolean(content) && Boolean(user)
 
   const usersOptions = users.map(user => (
     <option key={user.id} value={user.id}>
@@ -525,7 +524,7 @@ export const AddPostForm = () => {
         />
         // highlight-start
         <label htmlFor="postAuthor">Author:</label>
-        <select id="postAuthor" value={userId} onChange={onAuthorChanged}>
+        <select id="postAuthor" value={user} onChange={onAuthorChanged}>
           <option value=""></option>
           {usersOptions}
         </select>
@@ -537,9 +536,11 @@ export const AddPostForm = () => {
           value={content}
           onChange={onContentChanged}
         />
+        // highlight-start
         <button type="button" onClick={onSavePostClicked} disabled={!canSave}>
           Save Post
         </button>
+        // highlight-end
       </form>
     </section>
   )
@@ -594,9 +595,7 @@ Since we can't just put a `Date` class instance into the Redux store, we'll trac
             id: nanoid(),
             // highlight-next-line
             date: new Date().toISOString(),
-            title,
-            content,
-            user: userId,
+            ...payload
           },
         }
       },
